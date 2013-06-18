@@ -20,6 +20,7 @@
 */
 
 
+#include <stdio.h>
 #include <cmath>
 #include "Transforms.h"
 
@@ -728,4 +729,34 @@ void filter_greyscale( RawTile& rawtile ){
   // Update our number of channels and data length
   rawtile.channels = 1;
   rawtile.dataLength = np;
+}
+
+void filter_convolution( RawTile& in, const std::vector<double>& kernel ){
+
+  unsigned char* data = (unsigned char*)in.data;
+  unsigned char* buffer = new unsigned char[in.width * in.height * in.channels];
+  int side = sqrt(kernel.size());
+  int half_side = side / 2;
+
+  // FIXME: only supports 8-bit images
+  for( long y=0; y<in.height; y++ ){
+    for( long x=0; x<in.width; x++ ){
+      for( int c=0; c < in.channels; c++) {
+        long n = ((y * in.width) + x) * in.channels + c;
+        double v = 0;
+        for( int fy=0; fy<side; fy++ ){
+          for( int fx=0; fx<side; fx++ ){
+            long inx = (x + fx - half_side + in.width) % in.width;
+            long iny = (y + fy - half_side + in.height) % in.height;
+            long i = (inx + (iny * in.width)) * in.channels + c;
+            v += data[i] * kernel[fy * side + fx];
+          }
+        }
+        buffer[n] = (unsigned char) std::max(std::min(v, 255.0), 0.0);
+      }
+    }
+  }
+
+  delete[] (unsigned char*) in.data;
+  in.data = (void*) buffer;
 }

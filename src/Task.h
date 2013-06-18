@@ -318,5 +318,10 @@ class DeepZoom : public Task {
   void run( Session* session, const std::string& argument );
 };
 
+/// CVL Convolution Filter Command
+class CVL : public Task {
+ public:
+  void run( Session* session, const std::string& argument );
+};
 
 #endif

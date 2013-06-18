@@ -76,6 +76,7 @@ class View{
   int max_layers;			       /// Maximum number of quality layers allowed
   int layers;			               /// Number of quality layers
   ColourSpaces colourspace;                    /// Requested colourspace
+  std::vector<double> convolution;              /// Convulution filter matrix
 
 
   /// Constructor
@@ -231,6 +232,13 @@ class View{
   /* @return requested rotation angle in degrees */
   float getRotation(){ return rotation; };
 
+  /// Set convulution filter kernel
+  /* @param m convulution kernel matrix */
+  void setConvolution( const std::vector<double>& m ){ convolution = m; };
+
+  /// Set convulution filter kernel
+  /* @param m convulution kernel matrix */
+  const std::vector<double>& getConvolution(){ return convolution; };
 };
 
 

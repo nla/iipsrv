@@ -23,6 +23,7 @@
 #include "Tokenizer.h"
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 
 using namespace std;
@@ -60,6 +61,7 @@ Task* Task::factory( const string& t ){
   else if( type == "spectra" ) return new SPECTRA;
   else if( type == "lyr" ) return new LYR;
   else if( type == "deepzoom" ) return new DeepZoom;
+  else if( type == "cvl" ) return new CVL;
   else return NULL;
 
 }
@@ -347,3 +349,47 @@ void LYR::run( Session* session, const std::string& argument ){
 
 }
 
+void CVL::run( Session* session, const std::string& argument ){
+
+  /* The argument is a comma separated list of doubles which are entries
+     in a convolution filter kernel matrix. The matrix must be square and
+     of odd dimension.
+  */
+
+  if( session->loglevel >= 3 ) *(session->logfile) << "CVL handler reached" << endl;
+
+  Tokenizer izer( argument, "," );
+  std::vector<double> kernel;
+  while( izer.hasMoreTokens() && kernel.size()<26 ){
+    try{
+      kernel.push_back( atof( izer.nextToken().c_str() ));
+    }
+    catch( const string& error ){
+      if( session->loglevel >= 1 ) *(session->logfile) << error << endl;
+    }
+  }
+
+  int dimension = sqrt(kernel.size());
+
+  if( kernel.size() >= 26 ){
+    if( session->loglevel >= 2 ){
+      *(session->logfile) << "CVL :: Maximum convolution matrix is 5x5. "
+                          << argument << " is out of bounds." << endl;
+    }
+  }
+  else if( dimension * dimension != kernel.size() ){
+    if( session->loglevel >= 2 ){
+      *(session->logfile) << "CVL :: Convolution matrix must be square. "
+                          << argument << " is out of bounds." << endl;
+    }
+  }
+  else if( dimension % 2 == 0 ){
+    if( session->loglevel >= 2 ){
+      *(session->logfile) << "CVL :: Convolution matrix must have odd dimension. "
+                          << argument << " is out of bounds." << endl;
+    }
+  }
+  else {
+    session->view->setConvolution( kernel );
+  }
+}

@@ -260,6 +260,15 @@ void CVT::run( Session* session, const std::string& a ){
     }
 
 
+    // Apply convolution filter if requested
+    if ( session->view->getConvolution().size() > 0 ){
+      if( session->loglevel >= 3 ){
+	*(session->logfile) << "CVT :: Applying convolution filter" << endl;
+      }
+      filter_convolution( complete_image, session->view->getConvolution());
+    }
+
+
     // Apply any contrast adjustments and/or clipping to 8bit from 16bit or 32bit
     filter_contrast( complete_image, session->view->getContrast(), (*session->image)->max, (*session->image)->min );
 

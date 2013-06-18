@@ -92,6 +92,10 @@ void filter_rotate( RawTile& in, float angle );
 /** @param in input image */
 void filter_greyscale( RawTile& in );
 
-
+/// Apply convolution filter
+/** @param in input image 
+    @param kernel convolution kernel matrix
+*/
+void filter_convolution( RawTile& in, const std::vector<double>& kernel );
 
 #endif
