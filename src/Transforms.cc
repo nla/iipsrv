@@ -20,7 +20,6 @@
 */
 
 
-#include <stdio.h>
 #include <cmath>
 #include "Transforms.h"
 
